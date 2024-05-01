@@ -1,0 +1,745 @@
+#prefix archspec: <https://www.thegazette.co.uk/lda/archive#> .
+@prefix spec: <https://www.thegazette.co.uk/lda#> .
+
+@prefix puelia: <http://purl.org/puelia-php/ns#> .
+@prefix api:     <http://purl.org/linked-data/api/vocab#> .
+
+@prefix census-geo:  <http://statistics.gov.data.uk/def/census-geography/> .
+@prefix dc:      <http://purl.org/dc/elements/1.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix education-geo:  <http://statistics.gov.data.uk/def/education-geography/> .
+@prefix electoral-geo:  <http://statistics.gov.data.uk/def/electoral-geography/> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix ons-admingeo:  <http://statistics.data.gov.uk/def/administrative-geography/> .
+@prefix os-admingeo:  <http://data.ordnancesurvey.co.uk/ontology/admingeo/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix foundation:  <http://statistics.data.gov.uk/def/Foundation/> .
+@prefix spatialrelations:  <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix frbr: <http://purl.org/vocab/frbr/core#> .
+@prefix metalex: <http://www.metalex.eu/metalex/2008-05-02#> .
+@prefix gaz: <https://www.thegazette.co.uk/def/publication#> .
+@prefix gazorg: <https://www.thegazette.co.uk/def/organisation#> .
+@prefix insolvency: <https://www.thegazette.co.uk/def/insolvency#> .
+@prefix ipsv: <http://www.esd.org.uk/standards/ipsv/2.00/ipsv-schema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+@prefix postcode: <http://data.ordnancesurvey.co.uk/ontology/postcode/> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix foaf_wrong: <http://www.gazettes-online.co.uk/ontology/foaf> .
+
+@prefix personal-legal: <https://www.thegazette.co.uk/def/personal-legal#> .
+@prefix person: <https://www.thegazette.co.uk/def/person#> .
+@prefix court: <https://www.thegazette.co.uk/def/court#> .
+@prefix honours: <https://www.thegazette.co.uk/def/honours#> .
+
+############################################################################################
+#
+# COMPONENTS
+#
+############################################################################################
+
+
+############################################################################################
+#
+# API DESCRIPTION
+#
+############################################################################################
+
+spec:api
+	a api:API ;
+	rdfs:label "The Gazette API"@en;
+	rdfs:comment "The Gazette API can be used to retrieve details about gazette notices. To access information about a particular notice or issue, use the item endpoint and specify the identifier. If you want a list of gazette notices or issues, use one of the provided list endpoints";
+	api:maxPageSize "50";
+	api:defaultPageSize "10" ;
+	api:defaultViewer spec:viewerMedium ;
+	api:defaultFormatter spec:HtmlFormatter ;
+	api:viewer 
+		spec:viewerShort ,
+		spec:viewerMedium ,
+#		spec:provenanceViewer ,
+		spec:issueViewer ,
+		spec:agentViewer ,
+		api:describeViewer ,
+		api:labelledDescribeViewer ;
+	api:endpoint 
+		spec:gazetteNotice ,
+		spec:gazetteNoticeList ,
+		spec:gazetteProvenance ,
+		spec:gazetteActivity ,
+		spec:gazetteActivity1 ,
+		spec:gazetteActivity2 ,
+		spec:gazetteEntity2 ,
+		spec:gazetteEntity3 ,
+		spec:gazetteEntity4 ,
+		spec:gazetteAgent ,
+		spec:gazetteAccountAgent ,
+		spec:gazetteBundleAgent ,
+		spec:gazetteCLSBundleAgent ,
+		spec:gazetteNoticeVersionAgent ,
+		spec:gazetteNoticeSubmittedAgent ,
+		spec:gazetteTaskAgent ,
+		spec:gazetteTaskNoticeAgent ,
+		spec:gazetteTaskVersionAgent ,
+		spec:gazetteTaskVersionNoticeAgent ,
+		spec:gazetteInsolvencyPractitioner ,
+		spec:gazetteLocalAuthority ,
+		spec:gazetteLocalAuthorityAddress ,
+		spec:gazetteLocalAuthorityList ,
+		spec:gazetteCourt ,
+		spec:gazetteCourtAddress ,
+		spec:gazetteCourtList ,
+		spec:searchGazetteNoticesByNoticeCode ,
+		spec:searchGazetteNoticesByPublicationDate .
+    
+############################################################################################
+# Item endpoints
+	
+spec:gazetteNotice
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns a specific gazette notice" ;
+	api:exampleRequestPath "/notice/L-60457-1783365" ;
+	api:uriTemplate "/notice/{noticeId}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}" ;
+	api:viewer spec:provenanceEntityViewer ;
+	api:defaultViewer spec:viewerMedium .
+
+spec:gazetteProvenance
+	a api:ItemEndpoint ;
+    rdfs:comment "Returns a partial provenance graph" ;
+	puelia:inverseProperty gaz:isProvenanceOf ;
+	api:exampleRequestPath "/notice/L-60457-1783365/provenance" ;
+	api:uriTemplate "/notice/{noticeId}/provenance" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}/provenance" ;
+	api:defaultViewer spec:provenanceViewer .
+
+
+# Entity patterns
+# (1) https://www.thegazette.co.uk/id/notice/L-60701-1951132 - handled by gazetteNotice endpoint
+# (2) https://www.thegazette.co.uk/id/notice/L-60701-1951132/preview
+# (3) https://www.thegazette.co.uk/id/notice/L-60701-1951132/version/1
+# (4) https://www.thegazette.co.uk/id/Transformations/0.952-SNAPSHOT/SubmissionService/xsl/submission/splitNotices.xsl
+
+spec:gazetteEntity2
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an entity in provenance graph" ;
+	api:exampleRequestPath "/notice/L-60457-1783365/preview" ;
+	api:uriTemplate "/notice/{noticeId}/preview" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}/preview" ;
+	api:defaultViewer spec:provenanceEntityViewer .
+
+spec:gazetteEntity3
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns a versioned notice entity in provenance graph" ;
+	api:exampleRequestPath "/notice/L-60457-1783365/version/1" ;
+	api:uriTemplate "/notice/{noticeId}/version/{version}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}/version/{version}" ;
+	api:defaultViewer spec:provenanceEntityViewer .
+
+# Activity patterns
+#	(1) https://www.thegazette.co.uk/id/activity/split/bundle/78423
+#       https://www.thegazette.co.uk/id/activity/publish/notice/L-60701-1951132
+#   (2) https://www.thegazette.co.uk/id/activity/transform/notice/L-60701-1951132/version/2
+# Obsolete pattern
+spec:gazetteActivity
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an activity in provenance graph" ;
+	api:exampleRequestPath "/notice/L-60457-1783365/activity/enrich-notice" ;
+	api:uriTemplate "/notice/{noticeId}/activity/{activity}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}/activity/{activity}" ;
+	api:defaultViewer spec:activityViewer .	
+
+spec:gazetteActivity1
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an activity in provenance graph" ;
+	api:exampleRequestPath "/activity/split/bundle/78423" ;
+	api:uriTemplate "/activity/{task}/{thing}/{thingid}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/activity/{task}/{thing}/{thingid}" ;
+	api:defaultViewer spec:activityViewer .	
+
+spec:gazetteActivity2
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an activity in provenance graph" ;
+	api:exampleRequestPath "https://www.thegazette.co.uk/id/activity/transform/notice/L-60701-1951132/version/2" ;
+	api:uriTemplate "/activity/{task}/{thing}/{thingid}/version/{version}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/activity/{task}/{thing}/{thingid}/version/{version}" ;
+	api:defaultViewer spec:activityViewer .	
+
+# Agent patterns
+#  (1) https://www.thegazette.co.uk/id/agent/submission-workflow/bundle/78423
+#  (2) https://www.thegazette.co.uk/id/account/305
+#  (3) https://www.thegazette.co.uk/id/agent/enrichment-service/version/0.952-SNA PSHOT/notice/L-60701-1951132
+
+spec:gazetteAgent
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an agent in provenance graph" ;
+	api:exampleRequestPath "/notice/agent/enrichment-service-instance/host/w8app074254" ;
+	api:uriTemplate "/notice/{noticeId}/agent/{version}/host/{host}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}/agent/{version}/host/{host}" ;
+	api:defaultViewer spec:agentViewer .
+
+spec:gazetteAccountAgent
+    a api:ItemEndpoint ;
+    rdfs:comment "Returns an account (agent) in provenance graph" ;
+    api:exampleRequestPath "/account/41/provenance" ;
+    api:uriTemplate "/account/{account}/provenance" ;
+    api:itemTemplate "https://www.thegazette.co.uk/account/{account}/authorizedAccount" ;
+    api:defaultViewer spec:accountProvenanceViewer .
+	
+spec:gazetteAccountAgent
+    a api:ItemEndpoint ;
+    rdfs:comment "Returns an account (agent) in provenance graph" ;
+    api:exampleRequestPath "/account/41" ;
+    api:uriTemplate "/account/{account}" ;
+    api:itemTemplate "https://www.thegazette.co.uk/account/{account}/authorizedAccount" ;
+    api:defaultViewer spec:accountProvenanceViewer .
+
+spec:gazetteBundleAgent
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an agent associated with bundle in provenance graph" ;
+	api:exampleRequestPath "/agent/submission-workflow/bundle/78423" ;
+	api:uriTemplate "/agent/{task}/bundle/{bundle}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/agent/{task}/bundle/{bundle}" ;
+	api:defaultViewer spec:agentViewer .
+
+spec:gazetteCLSBundleAgent
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an agent associated with bundle in provenance graph" ;
+	api:exampleRequestPath "/agent/cls-handler/cls-bundle/78423" ;
+	api:uriTemplate "/agent/{task}/bundle/{bundle}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/agent/{task}/cls-bundle/{bundle}" ;
+	api:defaultViewer spec:agentViewer .
+
+spec:gazetteNoticeVersionAgent
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an agent associated with notice in provenance graph" ;
+	api:exampleRequestPath "/agent/xslt-processor/notice/250317/version/2" ;
+	api:uriTemplate "/agent/{task}/notice/{notice}/version/{version}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/agent/{task}/notice/{notice}/version/{version}" ;
+	api:defaultViewer spec:agentViewer .
+
+spec:gazetteNoticeSubmittedAgent
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an agent associated with notice in provenance graph" ;
+	api:exampleRequestPath "/agent/xslt-processor/notice/2673377/submitted" ;
+	api:uriTemplate "/agent/{task}/notice/{notice}/submitted" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/agent/{task}/notice/{notice}/submitted" ;
+	api:defaultViewer spec:agentViewer .
+
+spec:gazetteTaskNoticeAgent
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an agent associated with notice in provenance graph" ;
+	api:exampleRequestPath "/agent/notice-publisher/notice/2590668" ;
+	api:uriTemplate "/agent/{task}/notice/{notice}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/agent/{task}/notice/{notice}" ;
+	api:defaultViewer spec:agentViewer .
+
+spec:gazetteTaskVersionNoticeAgent
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an agent associated with bundle in provenance graph" ;
+	api:exampleRequestPath "/agent/enrichment-service/version/0.952-SNAPSHOT/notice/L-60701-1951132" ;
+	api:uriTemplate "/agent/{task}/version/{version}/notice/{notice}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/agent/{task}/version/{version}/notice/{notice}" ;
+	api:defaultViewer spec:agentViewer .
+
+spec:gazetteTaskVersionAgent
+	a api:ItemEndpoint ;
+	rdfs:comment "Returns an agent associated with bundle in provenance graph" ;
+	api:exampleRequestPath "/agent/enrichment-service/version/0.952-SNAPSHOT" ;
+	api:uriTemplate "/agent/{task}/version/{version}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/agent/{task}/version/{version}" ;
+	api:defaultViewer spec:agentViewer .
+
+spec:gazetteInsolvencyPractitioner 
+	a api:itemEndpoint ;
+	rdfs:comment "Returns an insolvency practitioner from registration number" ;
+	api:exampleRequestPath "/insolvency-practitioner/1234" ;
+	api:uriTemplate "/insolvency-practitioner/{ipnum}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/insolvency-practitioner/{ipnum}" ;
+	api:defaultViewer spec:personViewer .
+
+spec:gazetteLocalAuthority 
+	a api:itemEndpoint ;
+	rdfs:comment "Returns a local authority" ;
+	api:exampleRequestPath "/local-authority/derby-city-council" ;
+	api:uriTemplate "/local-authority/{authority}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/local-authority/{authority}" ;
+	api:defaultViewer spec:authorityViewer .	
+
+spec:gazetteLocalAuthorityAddress
+	a api:itemEndpoint ;
+	rdfs:comment "Returns a local authority address" ;
+	api:exampleRequestPath "/local-authority/derby-city-council/address" ;
+	api:uriTemplate "/local-authority/{authority}/address" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/local-authority/{authority}/address" ;
+	api:defaultViewer spec:authorityViewer .	
+	
+spec:gazetteLocalAuthorityList
+	a api:ListEndpoint ;
+	rdfs:comment "Returns a list of local authorities" ;
+	api:exampleRequestPath "/local-authority" ;
+	api:uriTemplate "/local-authority" ;
+	api:defaultViewer spec:viewerShort ;
+	api:selector spec:localAuthoritySelector .	
+
+spec:gazetteCourt
+	a api:itemEndpoint ;
+	rdfs:comment "Returns a court" ;
+	api:exampleRequestPath "/court/lancaster-magistrates-court" ;
+	api:uriTemplate "/court/{court}" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/court/{court}" ;
+	api:defaultViewer spec:authorityViewer .	
+
+spec:gazetteCourtAddress
+	a api:itemEndpoint ;
+	rdfs:comment "Returns a court address" ;
+	api:exampleRequestPath "/court/lancaster-magistrates-court/address" ;
+	api:uriTemplate "/court/{court}/address" ;
+	api:itemTemplate "https://www.thegazette.co.uk/id/court/{court}/address" ;
+	api:defaultViewer spec:authorityViewer .	
+	
+spec:gazetteCourtList
+	a api:ListEndpoint ;
+	rdfs:comment "Returns a list of court" ;
+	api:exampleRequestPath "/court" ;
+	api:uriTemplate "/court" ;
+	api:defaultViewer spec:viewerShort ;
+	api:selector spec:courtSelector .	
+
+	
+# This is here to support parameterised search
+# Note that without parameters, it will lead to extremely 
+# expensive queries
+spec:gazetteNoticeList
+	a api:ListEndpoint ;
+	rdfs:comment "Returns list of notices" ;
+	api:exampleRequestPath "/notice" ;
+	api:uriTemplate "/notice" ;
+	api:defaultViewer spec:viewerShort ;
+	api:viewer spec:viewerShort ;
+	api:formatter spec:HtmlFormatter ;
+	api:selector spec:gazetteSelector .
+
+
+spec:searchGazetteNoticesByPublicationDate
+	a api:ListEndpoint ;
+	rdfs:comment "Returns list of notices sorted by publication date" ;
+	api:exampleRequestPath "/notice/publication-date/2010-10-08" ;
+	api:uriTemplate "/notice/publication-date/{pubDate}" ;
+	api:defaultViewer spec:viewerShort ;
+	api:viewer 
+		spec:viewerShort ,
+		spec:issueViewer ;
+	api:formatter spec:HtmlFormatter ;
+#	api:selector [
+#		   a api:Selector ;
+#           api:parent spec:gazetteSelector ;
+#           api:filter "hasPublicationDate={pubDate}" ;
+#        ] .	
+	api:selector spec:publicationDateSelector .
+
+spec:searchGazetteNoticesByNoticeCode
+	a api:ListEndpoint ;
+	rdfs:comment "Returns list of notices for provided notice code" ;
+	api:exampleRequestPath "/notice/notice-code/2410" ;
+	api:uriTemplate "/notice/notice-code/{noticeCode}" ;
+	api:defaultViewer spec:viewerShort ;
+	api:viewer 
+		spec:viewerShort ,
+		spec:issueViewer ;
+	api:formatter spec:HtmlFormatter ;
+#	api:selector [
+#		   a api:Selector ;
+#           api:parent spec:gazetteSelector ;
+#           api:filter "hasNoticeCode={noticeCode}" ;
+#        ] .	
+	api:selector spec:noticeCodeSelector .
+		
+
+
+		
+############################################################################################
+#SELECTORSs
+
+spec:gazetteSelector
+  a api:Selector ;
+  api:sort "-hasPublicationDate" ;
+  api:filter "type=Notice" .
+
+spec:localAuthoritySelector
+  a api:Selector ;
+  api:orderBy "?item" ;
+  api:filter "type=Council" .
+
+ spec:courtSelector
+  a api:Selector ;
+  api:select "select ?item from <https://www.thegazette.co.uk/id/court>\n where {?item a <https://www.thegazette.co.uk/def/court#Court>}\n order by ?item" ;
+  .
+  
+spec:issueSelector
+  a api:Selector ;
+  api:filter "type=Issue" .
+
+spec:noticeCodeSelector
+  	a api:Selector ; 
+    api:parent spec:gazetteSelector ;
+    api:filter "hasNoticeCode={noticeCode}" .
+	
+spec:publicationDateSelector
+	a api:Selector ;
+    api:parent spec:gazetteSelector ;
+    api:filter "hasPublicationDate={pubDate}" .
+
+	
+############################################################################################
+#
+# VIEWERS
+#
+############################################################################################
+
+spec:viewerShort
+	a api:Viewer ;
+	api:name "short" ;
+	api:properties 	"type,label,identifier,title,creator,hasNoticeNumber,hasNoticeCode,hasPublicationDate,subject.value,language,language.value,publisher,isInIssue,isAbout,retractsNotice,hasNoticeRetraction,substitutesNotice,hasNoticeSubstitution" .
+
+spec:viewerMedium
+	a api:Viewer ;
+	api:name "medium" ;
+	api:graphTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}" ;
+	#api:graphTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}/provenance" ;
+	api:properties "*,isAbout.*,isAbout.*.*,isAbout.*.*.*,isAbout.*.*.*.type,isAbout.*.*.*.organisationName" .
+
+spec:provenanceViewer
+	a api:Viewer ;
+	api:name "Provenance" ;
+	api:graphTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}" ;
+	api:graphTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}/provenance" ;
+	api:properties "isProvenanceOf,isProvenanceOf.wasGeneratedBy.*,isProvenanceOf.wasDerivedFrom.*,label" .
+
+spec:activityViewer
+	a api:Viewer ;
+	api:name "activityViewer" ;
+	#api:graphTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}/provenance" ;
+	api:properties "*,*.*" .
+
+spec:provenanceEntityViewer
+	a api:Viewer ;
+	api:name "provenanceEntityViewer" ;
+	#api:graphTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}/provenance" ;
+	api:properties "wasGeneratedBy.*,wasAttributedTo.*" .
+
+spec:agentViewer
+	a api:Viewer ;
+	api:name "agentViewer" ;
+	#api:graphTemplate "https://www.thegazette.co.uk/id/notice/{noticeId}/provenance" ;
+	api:properties "*" .
+	
+spec:issueViewer
+	a api:Viewer ;
+	api:name "issueViewer" ;
+	api:properties "hasPublicationDate,hasIssueNumber,hasEdition,hasNotice" .
+
+spec:personViewer
+	a api:Viewer ;
+	api:name "personViewer" ;
+	api:properties "name,firstName,givenName,familyName" .
+
+spec:authorityViewer
+	a api:Viewer ;
+	api:name "authorityViewer" ;
+	api:properties "*,adr.*" .
+	
+spec:accountProvenanceViewer
+    a api:Viewer ;
+    api:name "accountProvenanceViewer" ;
+    api:properties "*,*.label,wasGeneratedBy.*.*.*,wasAttributedTo.*,specializationOf.*,wasDerivedFrom.*" .
+
+	
+############################################################################################
+# 
+spec:HtmlFormatter a api:XsltFormatter 
+	; api:name "html" 
+	; api:mimeType "text/html; charset=utf-8" 
+	; api:mimeType "text/html" 
+	; api:mimeType "application/xhtml+xml" 
+#	; api:stylesheet "views/xslt-styles/result.xsl"
+#	; api:stylesheet "views/xslt-styles/result_flint.xsl"
+#	; api:stylesheet "views/xslt-styles/gazette_flint.xsl"
+	.
+
+	
+############################################################################################
+#
+# VOCABULARY
+#
+############################################################################################
+
+rdf:type
+  api:label "type" .
+
+rdf:value
+  api:label "value" .
+
+rdfs:label
+  api:label "label" .
+
+dc:identifier
+  api:label "identifier" .
+
+dc:title
+  api:label "title" .
+
+dc:creator
+  api:label "creator" .
+
+dc:subject
+  api:label "subject" .
+
+dc:language
+  api:label "language" .
+
+dc:publisher
+  api:label "publisher" .
+
+#rdfs:isDefinedBy
+#  api:label "isDefinedBy" .
+
+#dcterms:created
+#  rdfs:range xsd:date ;
+#  api:label "created" .
+
+dcterms:modified
+  rdfs:range xsd:dateTime ;
+  api:label "modified" .
+
+dcterms:issued
+  api:label "issued" .
+
+gaz:hasPublicationDate
+  api:label "hasPublicationDate";
+  rdfs:range xsd:date .
+
+gaz:hasNoticeNumber
+  rdfs:range xsd:string ;
+  api:label "hasNoticeNumber" .
+
+gaz:hasNoticeID
+  rdfs:range xsd:string ;
+  api:label "hasNoticeID" .
+  
+gaz:hasNoticeCode
+  # should be string
+  rdfs:range xsd:integer ;
+#  rdfs:range xsd:string ;
+  api:label "hasNoticeCode" .
+
+gaz:isInIssue
+  api:label "isInIssue" .
+
+gaz:isAbout
+  api:label "isAbout" .
+
+gaz:hasIssueNumber
+  api:label "hasIssueNumber" .
+
+gaz:hasEdition
+  api:label "hasEdition" .
+
+gaz:hasNotice
+  api:label "hasNotice" .
+
+# Class
+
+gaz:Notice
+  api:label "Notice" .
+
+gaz:Issue
+  api:label "Issue" .
+
+gazorg:Council
+  api:label "Council" .
+  
+court:Court
+  api:label "Court" .
+  
+#ipsv:Insolvency
+#  api:label "Insolvency" .
+
+
+gaz:retractsNotice
+  api:label "retractsNotice" .
+
+gaz:hasNoticeRectraction
+  api:label "hasNoticeRetraction" .
+
+gaz:substitutesNotice 
+  api:label "substitutesNotice" .
+
+gaz:substitutesNotice
+  api:label "hasNoticeSubstitution" .
+
+gaz:isAbout
+  api:label "isAbout" .
+
+gaz:hasAuthoriser
+  api:label "hasAuthoriser" .
+
+gaz:hasAuthorisingPerson
+  api:label "hasAuthorisingPerson" .
+
+gaz:hasAuthorisingOrganisation
+  api:label "hasAuthorisingOrganisation" .
+
+gaz:hasAuthorisingRole
+  api:label "hasAuthorisingRole" .
+
+# type, label, identifier, title, creator, subject, language, publisher, hasNoticeNumber, hasNoticeCode, isInIssue, 
+
+gaz:isRequiredByLegislation a rdf:Property ;
+	api:label "isRequiredByLegislation" .
+
+
+
+############################################################################################
+# From W&P notices
+############################################################################################
+
+personal-legal:diedOn a rdf:Property ;
+  api:label "diedOn" ;
+	rdfs:range xsd:date .
+
+personal-legal:dateOfDeath a rdf:Property ;
+  api:label "dateOfDeath" ;
+	rdfs:range xsd:date .
+
+personal-legal:startDateOfDeath a rdf:Property ;
+  api:label "startDateOfDeath" ;
+	rdfs:range xsd:date .
+
+personal-legal:endDateOfDeath a rdf:Property ;
+  api:label "endDateOfDeath" ;
+	rdfs:range xsd:date .
+
+personal-legal:onOrBeforeDateOfDeath a rdf:Property ;
+  api:label "onOrBeforeDateOfDeath" ;
+	rdfs:range xsd:date .
+	
+personal-legal:hasEstateOf a rdf:Property ;
+  api:label "hasEstateOf" .
+
+personal-legal:hasPersonalRepresentative a rdf:Property ;
+  api:label "hasPersonalRepresentative" .
+
+# Fault: This property doesn't actually exist in vcard
+vcard:address a rdf:Property ;
+  api:label "address" .
+
+vcard:adr a rdf:Property ;
+  api:label "adr" .
+  
+vcard:street-address a rdf:Property;
+	api:label "streetAddress" .
+
+vcard:locality a rdf:Property;
+	api:label "locality" .
+
+vcard:region a rdf:Property;
+	api:label "region" .
+
+vcard:extended-address a rdf:Property;
+	api:label "extendedAddress" .	
+
+vcard:postal-code a rdf:Property;
+	api:label "postalCode" .	
+	
+person:hasAddress a rdf:Property ;
+  api:label "hasAddress" .
+  
+personal-legal:hasClaimDeadline a rdf:Property ;
+  api:label "hasClaimDeadline" .
+
+foaf:name a rdf:Property ;
+  api:label "name" .
+
+foaf:firstName a rdf:Property;
+  api:label "firstName" .
+
+foaf:givenName a rdf:Property;
+  api:label "givenName" .
+
+foaf:familyName a rdf:Property;
+  api:label "familyName" .
+
+foaf:surname a rdf:Property;
+  api:label "surname" .
+
+geo:lat a rdf:Property;
+	api:label "lat" .
+	
+geo:long a rdf:Property;
+	api:label "long" .
+
+postcode:district a rdf:Property;
+	api:label "district" .
+
+court:court a rdf:Property;
+	api:label "court" .
+	
+insolvency:hasCourtCase a rdf:Property;
+	api:label "hasCourtCase" .
+
+court:hasCourt a rdf:Property ;
+	api:label "hasCourt" .
+
+court:hasCourtName a rdf:Property;
+	api:label "hasCourtName" .
+	
+gaz:isProvenanceOf owl:inverseOf prov:has_provenance ;
+	api:label "isProvenanceOf" .
+
+prov:has_provenance a rdf:Property;
+	api:label "hasProvenance" .
+	
+prov:alternateOf a rdf:Property;
+	api:label "alternateOf" .
+
+prov:wasGeneratedBy a rdf:Property ;
+	api:label "wasGeneratedBy" .
+	
+prov:used a rdf:Property ;
+	api:label "used" .
+	
+prov:wasDerivedFrom a rdf:Property ;
+	api:label "wasDerivedFrom" .
+
+prov:wasAttibutedTo a rdf:Property ;
+	api:label "wasAttributedTo" .
+	
+prov:specializationOf a rdf:Property ;
+    api:label "specializationOf" .
+
+
+############################################################################################
+# From Honours notices
+############################################################################################
+
+
+honours:isAwarded a rdf:Property;
+	api:label "isAwarded".	
+
+honours:isAppointed a rdf:Property;
+	api:label "isAppointed".	
+
+honours:isAwardedTo a rdf:Property;
+	api:label "isAwardedTo".	
+
+gazorg:isMemberOfOrganisation a rdf:Property;
+	api:label "isMemberOfOrganisation".	
+
+gazorg:name a rdf:Property;
+	api:label "organisationName".	

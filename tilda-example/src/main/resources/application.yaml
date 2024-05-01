@@ -1,0 +1,18 @@
+spring:
+  banner:
+    location: banner/tilda.txt
+
+tilda:
+  apis:
+    api:
+      sparqlEndpoint: https://www.thegazette.co.uk/sparql
+  formatters:
+    html:
+      stylesheet: gazette_flint.xsl
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info

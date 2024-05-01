@@ -1,0 +1,8 @@
+tilda:
+  api:
+    sparqlEndpoint: https://www.thegazette.co.uk/sparql
+
+
+  formatters:
+    html:
+      stylesheet: stylesheets/gazette_flint.xsl
