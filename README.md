@@ -1,6 +1,6 @@
 # Tilda
 
-Tilda is TNA's Implementation of the Linked Data API. 
+Tilda is an Implementation of the Linked Data API. 
 What this means is that it is a library (built on top of Spring and RDF4J) that can be used 
 to build "Linked Data API" applications - REST APIs that connect to a SPARQL backend server,
 
