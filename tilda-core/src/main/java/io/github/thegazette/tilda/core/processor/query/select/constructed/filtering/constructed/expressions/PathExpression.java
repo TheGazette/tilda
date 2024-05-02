@@ -26,7 +26,7 @@ public final class PathExpression implements FilterExpression.WithSameSubject {
 
         var valProp = vocabulary.findPropertyByLabel(labels[labels.length - 1]).orElseThrow(PropertyNotFoundException::new);
 
-        var sameSubject =  new SelectQueryGenerator.QueryBuilder.SameSubject(parameter.name(), path , queryableValue(vocabulary, parameter, valProp));
+        var sameSubject =  new SelectQueryGenerator.QueryBuilder.SameSubject(parameter.name(), path , FilterExpression.queryableValue(vocabulary, parameter, valProp));
         return new PathExpression(parameter, sameSubject);
     }
 
