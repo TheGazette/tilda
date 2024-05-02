@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.co.tso.tilda</groupId>
+	<groupId>io.github.thegazette.tilda</groupId>
 	<artifactId>core</artifactId>
 	<version>1.0.7</version>
 	<name>tilda-core</name>
 	<packaging>jar</packaging>
-	<description>TSO Implementation of the Linked Data API - Core Library</description>
+	<description>An mplementation of the Linked Data API - Core Library</description>
 
 	<properties>
 		<java.version>17</java.version>
@@ -111,17 +111,4 @@
 
 
     </dependencies>
-
-	<distributionManagement>
-		<repository>
-			<id>central</id>
-			<name>ip-10-190-11-107-releases</name>
-			<url>http://artifactory.thegazette.co.uk/artifactory/Gaz</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<name>ip-10-190-11-107-snapshots</name>
-			<url>http://artifactory.thegazette.co.uk/artifactory/Gaz</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
